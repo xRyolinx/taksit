@@ -9,13 +9,14 @@ import {
   Link
 } from "react-router-dom";
 import LandingPage from './pages/LandingPage';
+import Product from './pages/product';
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path='/about' element={<h1>about</h1>} />
         <Route path='/' element={<LandingPage />} />
+        <Route path="/product" element={<Product />} />
       </Routes>
     </Router>
 
