@@ -108,14 +108,14 @@ def produits_view(request):
     #         })
     
     
-    # start and quantity
+    # skip and quantity
     try:
-        start = int(request.GET.get('start', 0))
+        skip = int(request.GET.get('skip', 0))
         quantity = int(request.GET.get('quantity', 20))
     except:
         return JsonResponse({
             "status" : "NO",
-            "error" : "Les parametres'start' et 'quantity' doivent etre des nombres!",
+            "error" : "Les parametres 'skip' et 'quantity' doivent etre des nombres!",
         })
         
     
@@ -136,27 +136,27 @@ def produits_view(request):
     if sous_categorie:
         if query:
             if filter:
-                produits = sous_categorie.produits.filter(nom__icontains=query).order_by(filter)[start:start+quantity]
+                produits = sous_categorie.produits.filter(nom__icontains=query).order_by(filter)[skip:skip+quantity]
             else:
-                produits = sous_categorie.produits.filter(nom__icontains=query)[start:start+quantity]
+                produits = sous_categorie.produits.filter(nom__icontains=query)[skip:skip+quantity]
         else:
             if filter:
-                produits = sous_categorie.produits.all().order_by(filter)[start:start+quantity]
+                produits = sous_categorie.produits.all().order_by(filter)[skip:skip+quantity]
             else:
-                produits = sous_categorie.produits.all()[start:start+quantity]     
+                produits = sous_categorie.produits.all()[skip:skip+quantity]     
 
     # get all objects
     else:
         if query:
             if filter:
-                produits = Produit.objects.filter(nom__icontains=query).order_by(filter)[start:start+quantity]
+                produits = Produit.objects.filter(nom__icontains=query).order_by(filter)[skip:skip+quantity]
             else:
-                produits = Produit.objects.filter(nom__icontains=query)[start:start+quantity]
+                produits = Produit.objects.filter(nom__icontains=query)[skip:skip+quantity]
         else:
             if filter:
-                produits = Produit.objects.order_by(filter)[start:start+quantity]
+                produits = Produit.objects.order_by(filter)[skip:skip+quantity]
             else:
-                produits = Produit.objects.all()[start:start+quantity]  
+                produits = Produit.objects.all()[skip:skip+quantity]  
         
     # to json
     produits = to_json(produits)
