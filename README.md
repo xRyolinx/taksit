@@ -24,7 +24,9 @@ Routes:
     - 'skip' : how much to skip [ex: skip=2 means it will skip 2 item] (must be int)
     - 'quantity' : max_size of the array returned (must be int)
     - 'q' : query (recherche)
-    - 'f' : filter (can only be 'nom' or 'prix_principal')
+    - 'f' : filter
+        - f=nom : filtrer par nom
+        - f=prix_principal : filtrer par prix
 
 - Route 4 : /api/commandes
 (finished, but need more testing)
