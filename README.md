@@ -21,7 +21,7 @@ Routes:
 - Route 3 : /api/produits
     Parameters:
     - 'sous_categorie' (M) : to know from which sous_categorie return (must be the 'nom' of the sous_categorie)
-    - 'skip' : how much to skip [ex: start=2 means it will skip 2 item] (must be int)
+    - 'skip' : how much to skip [ex: skip=2 means it will skip 2 item] (must be int)
     - 'quantity' : max_size of the array returned (must be int)
     - 'q' : query (recherche)
     - 'f' : filter (can only be 'nom' or 'prix_principal')
