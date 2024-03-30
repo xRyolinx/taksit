@@ -1,15 +1,12 @@
 Full stack e-commerce app
 
 
-API Documentation
-
-We will see in the following the routes possible.
+API Documentation : We will see in the following the routes possible.
 
 
 IMPORTANT:
 
 Some get-parameters are **essentials** for the working of the api.
-
 They will have the notation (M) next to them (Must).
 
 
