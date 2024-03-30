@@ -25,8 +25,8 @@ Routes:
     - 'quantity' : max_size of the array returned (must be int)
     - 'q' : query (recherche)
     - 'f' : filter
-        - f=nom : filtrer par nom
-        - f=prix_principal : filtrer par prix
+        - f=nom : filtrer par nom (Ordre alphabetique)
+        - f=prix_principal : filtrer par prix (par ordre croissant, du plus bas au plus haut prix)
 
 - Route 4 : /api/commandes
 (finished, but need more testing)
