@@ -5,13 +5,13 @@ from .models import *
 # Categories
 class Sous_Categorie_InlineAdmin(admin.TabularInline):
     model = Sous_Categorie
-    
+
 class CategorieAdmin(admin.ModelAdmin):
     list_display = ['nom', 'order_on_home']
     ordering = ['order_on_home']
     inlines = [Sous_Categorie_InlineAdmin]
 
-    
+
 # Produit
 class Mensualite_InlineAdmin(admin.TabularInline):
     model = Mensualite
