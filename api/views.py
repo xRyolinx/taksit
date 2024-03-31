@@ -14,6 +14,14 @@ from .models import *
 import json
     
 
+
+# send error
+def send_error(msg):
+    return JsonResponse({
+        "status" : "NO",
+        "error" : msg,
+    })
+
 # Categories
 def categories_view(request):
     # quantity
@@ -53,7 +61,6 @@ def categories_view(request):
 def sous_categories_view(request):
     # Nom de la categorie mere
     categorie_name = request.GET.get('categorie', '')
-    print(categorie_name)
     
     # La categorie mere
     try:
@@ -234,64 +241,103 @@ def produit_view(request):
         "produit" : produit,
     })
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> da4a7f763e195cac9934ed9ca7991324c812c90d
 
 # Commande
-def commande(request):
+def commande_view(request):
     # get to page
     if request.method != 'POST':
         return JsonResponse({
             "status" : "NO",
             "error" : "Please send via a POST request!"
         })
+    # if request.method == 'GET':
+    #     return render(request, 'api/commande.html')
     
     # submit form
     if request.method == 'POST':
         # get data
         nom = request.POST.get('nom')
         telephone = request.POST.get('telephone')
-        salaire = request.POST.get('salaire')
         wilaya = request.POST.get('wilaya')
         commune = request.POST.get('commune')
         adresse_complete = request.POST.get('adresse_complete')
         mode_livraison = request.POST.get('mode_livraison')
+        salaire = request.POST.get('salaire')
+        produits = json.loads(request.POST.get('produits'))
         
-        produits = request.POST.get('produits')
-        
+        # check if all here
         if (not nom or not telephone or not salaire or not wilaya or not commune
         or not adresse_complete or not mode_livraison or not produits):
-            return JsonResponse({
-                "status" : "NO",
-                "error" : "Veuillez bien saisir toutes les informations!"
-            })
+            return send_error("Veuillez bien saisir toutes les informations!")
         
+        # salaire type checking
+        try:
+            salaire = int(salaire)
+        except:
+            return send_error("Le salaire doit etre de type int !")
+        
+        #  produits check
+        for produit in produits:
+            if not all(k in produit for k in ("produit_id", "mensualite_id", "quantite")):
+                return send_error("Keys missing!")
+        
+        # date - heure
         date_heure_envoi = datetime.now(tz=ZoneInfo("Africa/Algiers")).strftime("%d/%m/%Y - %H:%M:%S")
 
 
         # get products
         products = []
         for el in produits:
+            # convert to int
             try:
+<<<<<<< HEAD
                 produit = Produit.objects.get(id=int(el['id']))
                 products.append({
                         'produit' : produit,
                         'quantite' : el['quantite'],
                         'prix' : el['prix'],
                     })
+=======
+                id_produit = int(el['produit_id'])
+                quantite = int(el['quantite'])
+                id_mensualite = int(el['mensualite_id'])
+>>>>>>> da4a7f763e195cac9934ed9ca7991324c812c90d
             except:
-                return JsonResponse({
-                    "status" : "NO",
-                    "error" : "L'id de ce produit n'existe pas!"
-                })
+                return send_error("Les id et la quantite doivent etre de type int!")
             
+            # get product
+            try:
+                produit = Produit.objects.get(pk=id_produit)
+            except:
+                return send_error("L'id de ce produit n'existe pas!")
             
+            # get mensualite
+            try:
+                mensualite = produit.mensualites.get(pk=id_mensualite)
+            except:
+                return send_error("L'id de cette mensualite n'existe pas!")
+            
+            # ajouter
+            products.append({
+                'produit' : produit.nom_complet,
+                'quantite' : quantite,
+                'prix' : mensualite.prix,
+                'duree' : mensualite.remboursement_mois,
+            })            
+        
+        
         # add commande to db
-        added = Commande(nom=nom, telephone=telephone, salaire=int(salaire), wilaya=wilaya, commune=commune, adresse_complete=adresse_complete, mode_livraison=mode_livraison, date_heure_envoi=date_heure_envoi)
+        added = Commande(nom=nom, telephone=telephone, salaire=int(salaire), wilaya=wilaya, commune=commune, adresse_complete=adresse_complete, mode_de_livraison=mode_livraison, date_heure_envoi=date_heure_envoi)
         added.save()
         
         # add produits commande to db
         for el in products:
-            produit_cmd = Produit_Commande(quantite=el['quantite'], prix=el['prix'], commande=added)
+            produit_cmd = Produit_Commande(produit=el['produit'], quantite=el['quantite'], prix_mois=el['prix'],
+                                           duree_mois=el['duree'], commande=added)
             produit_cmd.save()
         
         
@@ -306,14 +352,16 @@ def commande(request):
                 Produits commandés:\n\n
             '''
         
+        # 
         for prod in products:
             message += f'''
-                {prod['produit'].nom}\n
+                {prod['produit']}\n
                 Quantite: {prod['quantite']}\n
-                Prix: {prod['prix']}\n\n
+                Prix: {prod['prix']}\n
+                Duree: {prod['duree']}\n\n
             '''
             
-            
+        # send mail
         send_mail(
             'Nouvelle Commande',
             message,

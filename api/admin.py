@@ -35,7 +35,7 @@ class ProduitAdmin(admin.ModelAdmin):
 # Commandes
 class Produit_Commande_InlineAdmin(admin.TabularInline):
     model = Produit_Commande
-    readonly_fields = ['produit', 'prix']
+    readonly_fields = ['produit', 'quantite', 'prix_mois', 'duree_mois']
     
 class Commande_Admin(admin.ModelAdmin):
     list_display = ["nom", "date_heure_envoi"] 
