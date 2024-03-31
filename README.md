@@ -27,7 +27,8 @@ Routes:
 
     Parameters:
     - 'categorie' : to know from which categorie return (must be the 'nom' of the categorie)
-    - 'sous_categorie' : to know from which sous_categorie return (must be the 'nom' of the sous_categorie)
+    - 'sous_categorie' : to know from which sous_categorie return (must be the 'nom' of the sous_categorie).
+    PS: The sous_categorie parameter negates the categorie parameter. (sous_categorie has more priority than the categorie)
     - 'skip' : how much to skip [ex: skip=2 means it will skip 2 item] (must be int)
     - 'quantity' : max_size of the array returned (must be int)
     - 'q' : query (recherche)
