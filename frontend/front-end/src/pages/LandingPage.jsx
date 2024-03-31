@@ -14,7 +14,9 @@ const LandingPage = () => {
             <div className=''>
                 <Hero />
             </div>
-            <TopBar />
+            <div className='width-full h-[100vh] bg-red-950 z-[9999999999] absolute'>
+                <TopBar />
+            </div>
             <ProduitsCategory />
             {/* <ProduitsCategory /> */}
             <Footer />

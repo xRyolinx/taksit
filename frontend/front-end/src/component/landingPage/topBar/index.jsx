@@ -5,7 +5,7 @@ import fbIcon from "@/public/Icons/fbIcon.svg"
 import telIcon from "@/public/Icons/telIcon.svg"
 const TopBar = () => {
     return (
-        <section className='fixed w-full z-[9999] top-[710px] flex justify-center gap-20 px-10 mx-auto items-center text-white bg-Secondary-900'>
+        <section className='fixed w-full z-[9999] bottom-0 flex justify-center gap-20 px-10 mx-auto items-center text-white bg-Secondary-900'>
             <div className='flex items-center gap-4'>
                 <img src={telIcon} />
                 <h6>0982 34 45 45</h6>

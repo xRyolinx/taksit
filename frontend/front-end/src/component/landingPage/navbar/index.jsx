@@ -4,9 +4,9 @@ import PanierIcon from "@/public/Icons/panierIcon.svg"
 import rechIcon from "@/public/Icons/rechIcon.svg"
 const Navbar = () => {
     return (
-        <nav className='flex z-[9999] top-4 right-0 left-0 fixed py-3 w-[85%]  px-10 text-Primary-100 rounded-[200px] text-white items-center bg-Secondary-700 opacity-[70%]  justify-between mx-auto'>
+        <nav className='flex z-[9999] top-4 right-0 left-0 fixed py-3 w-[80%]  px-10 text-Primary-100 rounded-[200px] text-white items-center bg-Secondary-700   justify-between mx-auto'>
             <div className='flex items-center gap-2 '>
-                <img className='w-[64px] h-[64px]' src={Logo} />
+                <img className='w-[50px] h-[50px]' src={Logo} />
                 <h1>Takssit</h1>
             </div>
             <h3>Accueil</h3>

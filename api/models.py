@@ -25,6 +25,7 @@ class Sous_Categorie(models.Model):
 class Produit(models.Model):
     nom = models.CharField(max_length=64)
     nom_complet = models.CharField(max_length=64)
+    prix_principal = models.IntegerField()
     image = models.CharField(max_length=64)
     sous_categorie = models.ForeignKey(Sous_Categorie, on_delete = models.CASCADE, related_name="produits")
     nb_commandes = models.IntegerField(default=0)
@@ -36,7 +37,7 @@ class Produit(models.Model):
 # Mensualites de produit
 class Mensualite(models.Model):
     prix = models.CharField(max_length=64)
-    order = models.IntegerField(unique=True)
+    order = models.IntegerField()
     produit = models.ForeignKey(Produit, on_delete = models.CASCADE, related_name="mensualites")
     
     def __str__(self):
@@ -47,14 +48,14 @@ class Mensualite(models.Model):
 class Detail(models.Model):
     nom_detail = models.CharField(max_length=64)
     information = models.CharField(max_length=64)
-    order = models.IntegerField(unique=True)
+    order = models.IntegerField()
     produit = models.ForeignKey(Produit, on_delete = models.CASCADE, related_name="details")
 
 
 # Description de produit
 class Description_Paragraphe(models.Model):
     paragraphe = models.TextField()
-    order = models.IntegerField(unique=True)
+    order = models.IntegerField()
     produit = models.ForeignKey(Produit, on_delete = models.CASCADE, related_name="description")
 
 
@@ -76,6 +77,7 @@ class Commande(models.Model):
 
 # Produits de la commande
 class Produit_Commande(models.Model):
+    quantite = models.IntegerField()
     produit = models.ForeignKey(Produit, on_delete = models.CASCADE)
     prix = models.ForeignKey(Mensualite, on_delete = models.CASCADE)
     commande = models.ForeignKey(Commande, on_delete = models.CASCADE, related_name="produits")

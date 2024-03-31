@@ -6,6 +6,9 @@ import product2 from "@/public/chauffage.svg"
 // Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/navigation'
+import CardProduct from './CardProduct';
+
+
 
 const CarouselProducts = ({ backgroundColor, category }) => {
     const arrayProducts = [product, product2, product, product2, product2]
@@ -27,26 +30,15 @@ const CarouselProducts = ({ backgroundColor, category }) => {
                     arrayProducts.map(pro => {
                         return (
                             <div className='bg-white'>
-                                <SwiperSlide>
-                                    <div className='pb-5 pt-10 px-4 w-full text-center rounded-md bg-white  '>
-                                        <img className='h-[200px] mx-auto' src={pro} />
-                                        <div className='p-2'>
-                                            <p className='border-b-[0.8px] font-medium text-lg border-neutral-800   mx-auto '>Cuisinière</p>
-
-                                            <p className='text-[#1E1E1E] text-md font-medium opacity-[50%]'>700da / mois</p>
-
-                                        </div>
-                                        <button className=' text-white px-2 py-1   bg-Primary-500 rounded-xl'>Plus d'infos</button>
-                                    </div>
+                                <SwiperSlide key={Math.random() * Math.random()}>
+                                    <CardProduct src={pro} />
                                 </SwiperSlide>
                             </div>
                         )
                     })
                 }
-
-
             </Swiper>
-        </section >
+        </section>
     )
 }
 

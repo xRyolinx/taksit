@@ -4,6 +4,9 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",],
   theme: {
     extend: {
+      fontFamily: {
+        "AnyBody": ["Anybody", "sans-serif"]
+      },
       colors: {
         "brown-c": {
           100: "#6C4F41",
