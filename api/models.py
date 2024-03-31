@@ -79,11 +79,11 @@ class Commande(models.Model):
 
 # Produits de la commande
 class Produit_Commande(models.Model):
+    produit = models.CharField(max_length=64)
     quantite = models.IntegerField()
-    produit = models.ForeignKey(Produit, on_delete = models.CASCADE)
-    prix = models.ForeignKey(Mensualite, on_delete = models.CASCADE)
+    prix_mois = models.CharField(max_length=64)
+    duree_mois = models.CharField(max_length=64)
     commande = models.ForeignKey(Commande, on_delete = models.CASCADE, related_name="produits")
-
 
 
 # About

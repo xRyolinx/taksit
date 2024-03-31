@@ -44,5 +44,20 @@ Routes:
 
 
 - Route 4 : /api/commandes
+    Must be done with post request
+    Parameters: All of these are required
+    - nom : string
+    - telephone : string
+    - wilaya : string
+    - commune : string
+    - adresse_complete : string
+    - mode_livraison : string
+    - salaire : int
+    - produits : **array** of objects :
+        {
+            'produit_id' : ,
+            'mensualite_id' : ,
+            'quantite' : ,
+        }
+        PS : All of them must be int.
 
-(finished, but need more testing)

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Commande</title>
+    <script src="{% static 'api/js/commande.js' %}"></script>
+
+    <style>
+        form {
+            display: inline-block;
+            border: 2px solid red;
+            padding: 20px;
+        }
+        input {
+            display: block;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <form action="/api/commande">
+        <h2>Commande</h2>
+        nom
+        <input value="manil" type="text" name="nom" id="">
+        tel
+        <input value="0557 93 29 69" type="text" name="telephone" id="">
+        salaire
+        <input value="25000" type="text" name="salaire" id="">
+        wilaya
+        <input value="Alger" type="text" name="wilaya" id="">
+        commune
+        <input value="Alger" type="text" name="commune" id="">
+        adr
+        <input value="04 Rue Pomel, Telemly, Alger" type="text" name="adresse_complete" id="">
+        livraison
+        <input value="A domicile" type="text" name="mode_livraison" id="">
+        <input id="send" type="submit">
+
+        <p id="status"></p>
+    </form>
+</body>
+</html>
