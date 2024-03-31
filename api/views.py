@@ -12,15 +12,6 @@ from zoneinfo import ZoneInfo
 from .models import *
 
 import json
-
-
-# serialize querySet to json
-def to_json(element):
-    element = serialize("json", element)
-    element = json.loads(element)
-    for i in range(len(element)):
-        element[i] = element[i]['fields']
-    return element
     
 
 # Categories
@@ -33,36 +24,28 @@ def categories_view(request):
     
     # get all objects
     if not quantity:
-        categories = Categorie.objects.all().order_by('order_on_home')
+        categories = Categorie.objects.all().order_by('order_on_home').values('id', 'nom', 'image')
     else:
-        categories = Categorie.objects.all().order_by('order_on_home')[:quantity]
+        categories = Categorie.objects.all().order_by('order_on_home').values('id', 'nom', 'image')[:quantity]
         
     # to json
-    categories_dict = to_json(categories)
+    categories = list(categories)
     
     # sous_categories
     if check_sous_categorie == 'true':
         for i in range(len(categories)):
-            # pk field
-            categories_dict[i]['pk'] = categories[i].pk
             # get objects of sous categories
-            sous_categories = Sous_Categorie.objects.filter(categorie=categories[i])
+            sous_categories = Sous_Categorie.objects.filter(categorie=categories[i]['id']).values('id', 'nom', 'image')
             # to json
-            sous_categories_dict = to_json(sous_categories)
-            for j in range(len(sous_categories)):
-                sous_categories_dict[j]['pk'] = sous_categories[j].pk
+            sous_categories = list(sous_categories)
             # add to dict
-            categories_dict[i]['sous_categories'] = sous_categories_dict
-            
+            categories[i]['sous_categories'] = sous_categories
     
-    print(categories_dict)
-    
-            
-    
+
     # send
     return JsonResponse({
         "status" : "OK",
-        "categories" : categories_dict,
+        "categories" : categories,
     })
 
 
@@ -86,12 +69,12 @@ def sous_categories_view(request):
     
     # get all objects
     if not quantity:
-        sous_categories = categorie.sous_categories.all().order_by('nom')
+        sous_categories = categorie.sous_categories.all().order_by('nom').values('id', 'nom', 'image')
     else:
-        sous_categories = categorie.sous_categories.all().order_by('nom')[:quantity]
+        sous_categories = categorie.sous_categories.all().order_by('nom').values('id', 'nom', 'image')[:quantity]
     
     # to json
-    sous_categories = to_json(sous_categories)
+    sous_categories = list(sous_categories)
     
     # send
     return JsonResponse({
@@ -138,7 +121,6 @@ def produits_view(request):
             "status" : "NO",
             "error" : "Les parametres 'skip' et 'quantity' doivent etre des nombres!",
         })
-        
     
     # ---- query and filter ----
     # query
@@ -146,11 +128,15 @@ def produits_view(request):
     
     # filter
     filter = request.GET.get('f', None)
-    if filter and filter not in ['nom', 'prix_principal']:
+    if filter and filter not in ['nom', 'prix_principal', 'nb_commandes']:
         return JsonResponse({
             "status" : "NO",
             "error" : "Ce filtre n'exite pas",
         })
+        
+    # descending order for nb_commandes
+    if filter == 'nb_commande':
+        filtre = '-nb_commandes'
         
     # choose categorie or sous categorie
     if sous_categorie:
@@ -165,35 +151,87 @@ def produits_view(request):
     if source:
         if query:
             if filter:
-                produits = source.produits.filter(nom__icontains=query).order_by(filter)[skip:skip+quantity]
+                produits = source.produits.filter(nom__icontains=query).order_by(filter).values('id', 'nom', 'prix_principal', 'image', 'nb_commandes')[skip:skip+quantity]
             else:
-                produits = source.produits.filter(nom__icontains=query)[skip:skip+quantity]
+                produits = source.produits.filter(nom__icontains=query).values('id', 'nom', 'prix_principal', 'image', 'nb_commandes')[skip:skip+quantity]
         else:
             if filter:
-                produits = source.produits.all().order_by(filter)[skip:skip+quantity]
+                produits = source.produits.all().order_by(filter).values('id', 'nom', 'prix_principal', 'image', 'nb_commandes')[skip:skip+quantity]
             else:
-                produits = source.produits.all()[skip:skip+quantity]     
+                produits = source.produits.all().values('id', 'nom', 'prix_principal', 'image', 'nb_commandes')[skip:skip+quantity]     
 
     # get all objects
     else:
         if query:
             if filter:
-                produits = Produit.objects.filter(nom__icontains=query).order_by(filter)[skip:skip+quantity]
+                produits = Produit.objects.filter(nom__icontains=query).order_by(filter).values('id', 'nom', 'prix_principal', 'image', 'nb_commandes')[skip:skip+quantity]
             else:
-                produits = Produit.objects.filter(nom__icontains=query)[skip:skip+quantity]
+                produits = Produit.objects.filter(nom__icontains=query).values('id', 'nom', 'prix_principal', 'image', 'nb_commandes')[skip:skip+quantity]
         else:
             if filter:
-                produits = Produit.objects.order_by(filter)[skip:skip+quantity]
+                produits = Produit.objects.order_by(filter).values('id', 'nom', 'prix_principal', 'image', 'nb_commandes')[skip:skip+quantity]
             else:
-                produits = Produit.objects.all()[skip:skip+quantity]  
-    
+                produits = Produit.objects.all().values('id', 'nom', 'prix_principal', 'image', 'nb_commandes')[skip:skip+quantity]
+
     # to json
-    produits = to_json(produits)
+    produits = list(produits)
 
     # send
     return JsonResponse({
         "status" : "OK",
         "produits" : produits,
+    })
+
+
+# Produit
+def produit_view(request):
+    # Id du produit
+    try:
+        id = int(request.GET.get('id', 0))
+    except:
+        return JsonResponse({
+            "status" : "NO",
+            "error" : "L'id doit etre un nombre!",
+        })
+
+    # Le produit
+    produits = Produit.objects.filter(pk=id)
+    if not produits:
+        return JsonResponse({
+        "status" : "NO",
+        "error" : "L'id de ce produit n'exite pas",
+    })
+    produit = produits[0]
+
+    
+    # prix
+    prix = list(produit.mensualites.all().order_by('order').values('id', 'prix', 'remboursement_mois'))
+    
+    # details
+    details = list(produit.details.all().order_by('order').values('nom_detail', 'information'))
+    
+    # description
+    description = list(produit.description.all().order_by('order').values('paragraphe'))
+    
+    
+    # to json
+    produit = serialize('json', produits)
+    produit = json.loads(produit)
+    produit = produit[0]
+    
+    produit['fields']['id'] = produit['pk']
+    produit = produit['fields']
+    
+    # add other fields
+    produit['mensualites'] = prix
+    produit['details'] = details
+    produit['description'] = description
+    
+    
+    # send
+    return JsonResponse({
+        "status" : "OK",
+        "produit" : produit,
     })
 
 
@@ -234,7 +272,7 @@ def commande(request):
         products = []
         for el in produits:
             try:
-                produit = Produit.objects.get(pk=int(el['id']))
+                produit = Produit.objects.get(id=int(el['id']))
                 products.append({
                         'produit' : produit,
                         'quantite' : el['quantite'],

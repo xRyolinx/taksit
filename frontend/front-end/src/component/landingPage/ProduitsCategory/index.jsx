@@ -11,7 +11,6 @@ const ProduitsCategory = () => {
             <CarouselProducts backgroundColor={"bg-Secondary-700"} category={"Electroménage"} />
             <CarouselProducts backgroundColor={""} category={"Electroménage"} />
             <CarouselProducts backgroundColor={"bg-Secondary-700"} category={"Electroménage"} />
-
         </section>
     )
 }

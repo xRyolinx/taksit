@@ -25,7 +25,7 @@ class Sous_Categorie(models.Model):
 class Produit(models.Model):
     nom = models.CharField(max_length=64)
     nom_complet = models.CharField(max_length=64)
-    prix_principal = models.IntegerField()
+    prix_principal = models.IntegerField(default=0)
     image = models.CharField(max_length=64)
     categorie = models.ForeignKey(Categorie, on_delete = models.CASCADE, related_name="produits")
     sous_categorie = models.ForeignKey(Sous_Categorie, on_delete = models.CASCADE, related_name="produits")
@@ -37,7 +37,8 @@ class Produit(models.Model):
 
 # Mensualites de produit
 class Mensualite(models.Model):
-    prix = models.CharField(max_length=64)
+    prix = models.IntegerField(default=0)
+    remboursement_mois = models.IntegerField(default=0)
     order = models.IntegerField()
     produit = models.ForeignKey(Produit, on_delete = models.CASCADE, related_name="mensualites")
     

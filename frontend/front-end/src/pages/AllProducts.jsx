@@ -16,7 +16,7 @@ const ProductsWithCategory = ({ data, categorie, sous_categorie }) => {
                 {data.nom}
             </h1>
             <CardsProducts categorie={categorie} sous_categorie={sous_categorie} />
-            <Link className='max-w-max mx-auto' to={`?sous_categorie=${data.nom}`} >
+            <Link className='max-w-max mx-auto' to={`?categorie=${categorie}&sous_categorie=${sous_categorie}`} >
                 <button className='font-[500] mx-auto text-lg py-1 px-3 rounded-xl bg-Secondary-300 text-Secondary-900'>
                     Voir tout
                 </button>
@@ -52,7 +52,7 @@ const AllProducts = () => {
                             !error && isLoading ? <h1>is Loading</h1> :
                                 sous_categories.sous_categories?.map(sous_categorie => {
                                     return (
-                                        <ProductsWithCategory sous_categorie={sous_categorie.nom} categorie={null} data={sous_categorie} />
+                                        <ProductsWithCategory sous_categorie={sous_categorie.nom} categorie={""} data={sous_categorie} />
                                     )
                                 }
                                 )
@@ -66,13 +66,13 @@ const AllProducts = () => {
             console.log("categories", categories);
             return (
                 <div className='w-full' >
-                    <h1 className='max-w-max font-AnyBody mt-[150px] mx-auto font-[700] text-3xl text-neutral-800'>Explorez Nos <span className='text-Secondary-700'>{categorie}</span>!</h1>
+                    <h1 className='max-w-max font-AnyBody mt-[150px] mx-auto font-[700] text-3xl text-neutral-800'>Explorez Nos <span className='text-Secondary-700'>Categorie</span>!</h1>
                     <main className='w-[80%]   mx-auto '>
                         {
-                            !error && isLoading ? <h1>is Loading</h1> :
+                            !error && isLoading ? <h1>...</h1> :
                                 categories.categories?.map(categorie => {
                                     return (
-                                        <ProductsWithCategory sous_categorie={null} categorie={categorie.nom} data={categorie} />
+                                        <ProductsWithCategory sous_categorie={""} categorie={categorie.nom} data={categorie} />
                                     )
                                 }
                                 )

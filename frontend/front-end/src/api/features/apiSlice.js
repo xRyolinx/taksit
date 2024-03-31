@@ -15,12 +15,14 @@ export const pokemonApi = createApi({
         }),
         getProducts: builder.query({
 
-            query: ({ sous_categorie, quantity, skip, q, f }) => `produits?sous_categorie=${sous_categorie}`
+            query: ({ categorie, sous_categorie, quantity, skip, q, f }) => `produits?sous_categorie=${sous_categorie}&categorie=${categorie}`
+        }),
+        getProduct: builder.query({
+            query: ({ id, nom }) => `produit?id=${id}&nom=${nom}`
         })
-
-    }),
-})
+    })
+});
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const { useGetPokemonByNameQuery, useGetCategoriesQuery, useGetProductsQuery, useGetSousCategoriesQuery } = pokemonApi
+export const { useGetProductQuery, useGetPokemonByNameQuery, useGetCategoriesQuery, useGetProductsQuery, useGetSousCategoriesQuery } = pokemonApi

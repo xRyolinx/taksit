@@ -27,18 +27,22 @@ Routes:
 
     Parameters:
     - 'categorie' : to know from which categorie return (must be the 'nom' of the categorie)
-    - 'sous_categorie' : to know from which sous_categorie return (must be the 'nom' of the sous_categorie)
+    - 'sous_categorie' : to know from which sous_categorie return (must be the 'nom' of the sous_categorie).
+    PS: The sous_categorie parameter negates the categorie parameter. (sous_categorie has more priority than the categorie)
     - 'skip' : how much to skip [ex: skip=2 means it will skip 2 item] (must be int)
     - 'quantity' : max_size of the array returned (must be int)
     - 'q' : query (recherche)
     - 'f' : filter
         - f=nom : filtrer par nom (Ordre alphabetique)
         - f=prix_principal : filtrer par prix (par ordre croissant, **du** plus **bas au** plus **haut** prix)
+        - f=nb_commandes : filtrer par nb commandes (par ordre decroissant, **du** plus **haut au** plus **bas** nb commandes)
+
+- Route 5 : /api/produit
+
+    Parameters:
+    - 'id' (M): id of the product wanted to be returned (must be int)
+
 
 - Route 4 : /api/commandes
 
 (finished, but need more testing)
-
-- Route 5 : /api/produit/<nom_produit>
-
-(not yet, but it's easy)

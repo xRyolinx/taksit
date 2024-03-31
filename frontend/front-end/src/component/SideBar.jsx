@@ -9,7 +9,7 @@ const SideBar = () => {
     const { data, isLoading } = useGetCategoriesQuery();
     console.log("data", data)
     return (
-        <div className='fixed    z-[99999]'>
+        <div className='fixed bg-Secondary-700 top-0  z-[99999]'>
             <Sidebar className='h-[100vh]'>
 
                 <Menu>
@@ -45,7 +45,7 @@ const SideBar = () => {
                     <MenuItem> Calendar </MenuItem> */}
                 </Menu>
             </Sidebar>
-        </div >
+        </div>
     )
 }
 

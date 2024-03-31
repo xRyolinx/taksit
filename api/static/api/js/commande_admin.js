@@ -20,14 +20,14 @@ function show(parent, data, id) {
     // show
     data.forEach(element => {
         // found the categorie
-        if (element['pk'] == id)
+        if (element['id'] == id)
         {
             // each sous categories
             let sc = element['sous_categories'];
             sc.forEach(el => {
                 // create option
                 let option = document.createElement('option');
-                option.value = el['pk'];
+                option.value = el['id'];
                 option.innerText = el['nom'];
                 parent.appendChild(option);
             })
