@@ -35,11 +35,14 @@ Routes:
     - 'f' : filter
         - f=nom : filtrer par nom (Ordre alphabetique)
         - f=prix_principal : filtrer par prix (par ordre croissant, **du** plus **bas au** plus **haut** prix)
+        - f=nb_commandes : filtrer par nb commandes (par ordre decroissant, **du** plus **haut au** plus **bas** nb commandes)
+
+- Route 5 : /api/produit
+
+    Parameters:
+    - 'id' (M): id of the product wanted to be returned (must be int)
+
 
 - Route 4 : /api/commandes
 
 (finished, but need more testing)
-
-- Route 5 : /api/produit/<nom_produit>
-
-(not yet, but it's easy)
