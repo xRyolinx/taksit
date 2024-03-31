@@ -5,7 +5,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        "AnyBody": ["Anybody", "sans-serif"]
+        "AnyBody": ["Anybody", "sans-serif"],
+        "Poppins": ["Poppins", "sans-serif"]
       },
       colors: {
         "brown-c": {

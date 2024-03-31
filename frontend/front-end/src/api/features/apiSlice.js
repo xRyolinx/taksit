@@ -7,7 +7,7 @@ export const pokemonApi = createApi({
     baseQuery: fetchBaseQuery({ baseUrl: 'http://127.0.0.1:8000/api/' }),
     endpoints: (builder) => ({
         getCategories: builder.query({
-            query: ({ quantity }) => `categories`
+            query: () => `categories`
         }
         ),
         getSousCategories: builder.query({
