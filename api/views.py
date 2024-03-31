@@ -23,25 +23,46 @@ def to_json(element):
     return element
     
 
-
 # Categories
 def categories_view(request):
     # quantity
     quantity = request.GET.get('quantity', None)
+    
+    # with sous categories
+    check_sous_categorie = request.GET.get('sc', '')
     
     # get all objects
     if not quantity:
         categories = Categorie.objects.all().order_by('order_on_home')
     else:
         categories = Categorie.objects.all().order_by('order_on_home')[:quantity]
-    
+        
     # to json
-    categories = to_json(categories)
+    categories_dict = to_json(categories)
+    
+    # sous_categories
+    if check_sous_categorie == 'true':
+        for i in range(len(categories)):
+            # pk field
+            categories_dict[i]['pk'] = categories[i].pk
+            # get objects of sous categories
+            sous_categories = Sous_Categorie.objects.filter(categorie=categories[i])
+            # to json
+            sous_categories_dict = to_json(sous_categories)
+            for j in range(len(sous_categories)):
+                sous_categories_dict[j]['pk'] = sous_categories[j].pk
+            # add to dict
+            categories_dict[i]['sous_categories'] = sous_categories_dict
+            
+    
+    print(categories_dict)
+    
+            
     
     # send
     return JsonResponse({
         "status" : "OK",
-        "categories" : categories,
+        "categories" : categories_dict,
     })
 
 
@@ -84,8 +105,8 @@ def produits_view(request):
     # Categorie ou Sous categorie
     sous_categorie_name = request.GET.get('sous_categorie', '')
     sous_categorie = None
-    # categorie_name = request.GET.get('categorie', '')
-    # categorie = None
+    categorie_name = request.GET.get('categorie', '')
+    categorie = None
     
     # La sous_categorie
     if sous_categorie_name:
@@ -98,14 +119,14 @@ def produits_view(request):
             })
 
     # La categorie
-    # elif categorie_name:
-    #     try:
-    #         categorie = Categorie.objects.get(nom__iexact=categorie_name)
-    #     except:
-    #         return JsonResponse({
-    #             "status" : "NO",
-    #             "error" : "Le nom de la categorie n'exite pas",
-    #         })
+    elif categorie_name:
+        try:
+            categorie = Categorie.objects.get(nom__iexact=categorie_name)
+        except:
+            return JsonResponse({
+                "status" : "NO",
+                "error" : "Le nom de la categorie n'exite pas",
+            })
     
     
     # skip and quantity
@@ -130,20 +151,28 @@ def produits_view(request):
             "status" : "NO",
             "error" : "Ce filtre n'exite pas",
         })
+        
+    # choose categorie or sous categorie
+    if sous_categorie:
+        source = sous_categorie
+    elif categorie:
+        source = categorie
+    else:
+        source = None
     
     
     # get objects of sous categorie
-    if sous_categorie:
+    if source:
         if query:
             if filter:
-                produits = sous_categorie.produits.filter(nom__icontains=query).order_by(filter)[skip:skip+quantity]
+                produits = source.produits.filter(nom__icontains=query).order_by(filter)[skip:skip+quantity]
             else:
-                produits = sous_categorie.produits.filter(nom__icontains=query)[skip:skip+quantity]
+                produits = source.produits.filter(nom__icontains=query)[skip:skip+quantity]
         else:
             if filter:
-                produits = sous_categorie.produits.all().order_by(filter)[skip:skip+quantity]
+                produits = source.produits.all().order_by(filter)[skip:skip+quantity]
             else:
-                produits = sous_categorie.produits.all()[skip:skip+quantity]     
+                produits = source.produits.all()[skip:skip+quantity]     
 
     # get all objects
     else:
@@ -157,7 +186,7 @@ def produits_view(request):
                 produits = Produit.objects.order_by(filter)[skip:skip+quantity]
             else:
                 produits = Produit.objects.all()[skip:skip+quantity]  
-        
+    
     # to json
     produits = to_json(produits)
 

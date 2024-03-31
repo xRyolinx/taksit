@@ -15,6 +15,7 @@ Routes:
 
     Parameters:
     - 'quantity' : max_size of the array returned. (must be int)
+    - 'sc' : sc=true <=> send sous_categorie within the categories.
 
 - Route 2 : /api/sous_categories
 
@@ -25,7 +26,8 @@ Routes:
 - Route 3 : /api/produits
 
     Parameters:
-    - 'sous_categorie' (M) : to know from which sous_categorie return (must be the 'nom' of the sous_categorie)
+    - 'categorie' : to know from which categorie return (must be the 'nom' of the categorie)
+    - 'sous_categorie' : to know from which sous_categorie return (must be the 'nom' of the sous_categorie)
     - 'skip' : how much to skip [ex: skip=2 means it will skip 2 item] (must be int)
     - 'quantity' : max_size of the array returned (must be int)
     - 'q' : query (recherche)

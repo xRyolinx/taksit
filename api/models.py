@@ -27,6 +27,7 @@ class Produit(models.Model):
     nom_complet = models.CharField(max_length=64)
     prix_principal = models.IntegerField()
     image = models.CharField(max_length=64)
+    categorie = models.ForeignKey(Categorie, on_delete = models.CASCADE, related_name="produits")
     sous_categorie = models.ForeignKey(Sous_Categorie, on_delete = models.CASCADE, related_name="produits")
     nb_commandes = models.IntegerField(default=0)
     

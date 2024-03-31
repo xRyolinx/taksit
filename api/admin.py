@@ -27,6 +27,9 @@ class ProduitAdmin(admin.ModelAdmin):
     ordering = ['nom_complet']
     inlines = [Mensualite_InlineAdmin, Detail_InlineAdmin, Description_Paragraphe_InlineAdmin]
     readonly_fields = ['nb_commandes']
+    
+    class Media:
+        js = ('api/js/commande_admin.js',)
 
 
 # Commandes
