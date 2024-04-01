@@ -36,12 +36,12 @@ Routes:
         - f=nom : filtrer par nom (Ordre alphabetique)
         - f=prix_principal : filtrer par prix (par ordre croissant, **du** plus **bas au** plus **haut** prix)
         - f=nb_commandes : filtrer par nb commandes (par ordre decroissant, **du** plus **haut au** plus **bas** nb commandes)
+    - 'total' : set total=true to receive total number of products
 
 - Route 5 : /api/produit
 
     Parameters:
     - 'id' (M): id of the product wanted to be returned (must be int)
-
 
 - Route 4 : /api/commandes
     Must be done with post request

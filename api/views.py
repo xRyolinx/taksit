@@ -182,8 +182,19 @@ def produits_view(request):
 
     # to json
     produits = list(produits)
+    
+    # total
+    total_check = request.GET.get('total', None)
+    if total_check == 'true':
+        total = Produit.objects.all().count()
+        # send
+        return JsonResponse({
+            "status" : "OK",
+            "produits" : produits,
+            "total" : total,
+        })
 
-    # send
+    # send without total
     return JsonResponse({
         "status" : "OK",
         "produits" : produits,
@@ -245,13 +256,13 @@ def produit_view(request):
 # Commande
 def commande_view(request):
     # get to page
-    if request.method != 'POST':
-        return JsonResponse({
-            "status" : "NO",
-            "error" : "Please send via a POST request!"
-        })
-    # if request.method == 'GET':
-    #     return render(request, 'api/commande.html')
+    # if request.method != 'POST':
+    #     return JsonResponse({
+    #         "status" : "NO",
+    #         "error" : "Please send via a POST request!"
+    #     })
+    if request.method == 'GET':
+        return render(request, 'api/commande.html')
     
     # submit form
     if request.method == 'POST':
@@ -263,12 +274,19 @@ def commande_view(request):
         adresse_complete = request.POST.get('adresse_complete')
         mode_livraison = request.POST.get('mode_livraison')
         salaire = request.POST.get('salaire')
-        produits = json.loads(request.POST.get('produits'))
+        
+        try:
+            produits = json.loads(request.POST.get('produits'))
+        except Exception as e:
+            return send_error(str(e))
         
         # check if all here
         if (not nom or not telephone or not salaire or not wilaya or not commune
-        or not adresse_complete or not mode_livraison or not produits):
+        or not adresse_complete or not mode_livraison):
             return send_error("Veuillez bien saisir toutes les informations!")
+        
+        if not produits:
+            return send_error("Vous n'avez commande aucun produit!")
         
         # salaire type checking
         try:
