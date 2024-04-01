@@ -26,11 +26,12 @@ SECRET_KEY = 'django-insecure-f#-0t!oavafgdcuwe0s#rtdfdl8w9uf-7nlmio5e^s4w$s(9*^
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'mm_rabia@esi.dz'
-EMAIL_HOST_PASSWORD = 'dfao clne uiyq ifop'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
+EMAIL_HOST = 'mail.darifacileplus.dz'
+EMAIL_HOST_USER = 'commercial@darifacileplus.dz'
+EMAIL_HOST_PASSWORD = 'Ys1?#x,V}s6C'
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True
+EMAIL_USE_TLS = False
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 ALLOWED_HOSTS = []

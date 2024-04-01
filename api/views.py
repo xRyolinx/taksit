@@ -361,30 +361,30 @@ def commande_view(request):
         
         # envoyer mail
         message = f'''
-                From: {nom}\n
-                Telephone: {telephone}\n
-                Wilaya: {wilaya}\n
-                Commnue: {commune}\n
-                Adresse: {adresse_complete}\n
-                Mode de livraison: {mode_livraison}\n\n\n
-                Produits commandés:\n\n
+                Nom : {nom}
+                Telephone : {telephone}
+                Wilaya : {wilaya}
+                Commnue : {commune}
+                Adresse : {adresse_complete}
+                Mode de livraison : {mode_livraison}\n\n
+                Produits commandés :
             '''
         
         # 
         for prod in products:
             message += f'''
-                {prod['produit']}\n
-                Quantite: {prod['quantite']}\n
-                Prix: {prod['prix']}\n
-                Duree: {prod['duree']}\n\n
+                Produit : {prod['produit']}
+                Quantite : {prod['quantite']}
+                Prix : {prod['prix']} da/mois
+                Duree de paiement : {prod['duree']} mois
             '''
             
         # send mail
         send_mail(
             'Nouvelle Commande',
             message,
-            'settings.EMAIL_HOST_USER',
-            ['mm_rabia@esi.dz'],
+            settings.EMAIL_HOST_USER,
+            ['commercial@darifacileplus.dz'],
             False,
         )
         

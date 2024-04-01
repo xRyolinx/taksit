@@ -60,7 +60,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 'produit_id': 1,
                 'mensualite_id': 1,
                 'quantite': 1,
-            }
+            },
+            {
+                'produit_id': 1,
+                'mensualite_id': 1,
+                'quantite': 1,
+            },
         ]
 
         data.append('produits', JSON.stringify(produits));
