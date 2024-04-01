@@ -176,7 +176,7 @@ def produits_view(request):
                 produits = Produit.objects.filter(nom__icontains=query).values('id', 'nom', 'prix_principal', 'image', 'nb_commandes')[skip:skip+quantity]
         else:
             if filter:
-                produits = Produit.objects.order_by(filter).values('id', 'nom', 'prix_principal', 'image', 'nb_commandes')[skip:skip+quantity]
+                produits = Produit.objects.all().order_by(filter).values('id', 'nom', 'prix_principal', 'image', 'nb_commandes')[skip:skip+quantity]
             else:
                 produits = Produit.objects.all().values('id', 'nom', 'prix_principal', 'image', 'nb_commandes')[skip:skip+quantity]
 
@@ -186,7 +186,20 @@ def produits_view(request):
     # total
     total_check = request.GET.get('total', None)
     if total_check == 'true':
-        total = Produit.objects.all().count()
+        # count of objects of categorie / sous categorie
+        if source:
+            if query:
+                total = source.produits.filter(nom__icontains=query).count()
+            else:
+                total = source.produits.all().count()     
+
+        # count of all objects
+        else:
+            if query:
+                total = Produit.objects.filter(nom__icontains=query).count()
+            else:
+                total = Produit.objects.all().count()
+
         # send
         return JsonResponse({
             "status" : "OK",
