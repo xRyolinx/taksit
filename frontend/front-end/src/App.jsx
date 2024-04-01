@@ -21,7 +21,6 @@ const Panier = lazy(() => import('./pages/Panier'));
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import Product1 from '@/public/product1.svg';
 import blur from "@/public/blur.jpg"
-import FormmulaireConfirmation from './pages/FormulaireConfirmation';
 
 function App() {
 
@@ -33,11 +32,10 @@ function App() {
         width={300} height={300}
         placeholderSrc={blur}
         alt='image product' /> */}
-      <FormmulaireConfirmation />
-      {/* <TopBar />
-      <SideBar />
+      {/* <Navbar />
+      <TopBar />
+      <SideBar /> */}
       <Router>
-        <Navbar />
         <Routes>
           <Route path='/' element={
             <Suspense>
@@ -60,7 +58,7 @@ function App() {
             </Suspense>
           } />
         </Routes>
-      </Router> */}
+      </Router>
     </>
 
   )

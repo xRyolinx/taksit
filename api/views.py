@@ -241,10 +241,6 @@ def produit_view(request):
         "produit" : produit,
     })
 
-<<<<<<< HEAD
-
-=======
->>>>>>> da4a7f763e195cac9934ed9ca7991324c812c90d
 
 # Commande
 def commande_view(request):
@@ -254,21 +250,26 @@ def commande_view(request):
             "status" : "NO",
             "error" : "Please send via a POST request!"
         })
-    # if request.method == 'GET':
-    #     return render(request, 'api/commande.html')
+    if request.method == 'GET':
+        return render(request, 'api/commande.html')
     
     # submit form
     if request.method == 'POST':
         # get data
-        nom = request.POST.get('nom')
-        telephone = request.POST.get('telephone')
-        wilaya = request.POST.get('wilaya')
-        commune = request.POST.get('commune')
-        adresse_complete = request.POST.get('adresse_complete')
-        mode_livraison = request.POST.get('mode_livraison')
-        salaire = request.POST.get('salaire')
-        produits = json.loads(request.POST.get('produits'))
-        
+        data = json.loads(request.body)
+      
+        nom =data.get('nom')
+        telephone =data.get('telephone')
+        wilaya =data.get('wilaya')
+        commune =data.get('commune')
+        adresse_complete =data.get('adresse_complete')
+        mode_livraison =data.get('mode_livraison')
+        salaire =data.get('salaire')
+        produits= data.get('produits')
+        #     produits = json.loads(request.POST.get('produits'))
+        # except Exception as e:
+        #     return send_error(str(e))  
+
         # check if all here
         if (not nom or not telephone or not salaire or not wilaya or not commune
         or not adresse_complete or not mode_livraison or not produits):
@@ -294,18 +295,9 @@ def commande_view(request):
         for el in produits:
             # convert to int
             try:
-<<<<<<< HEAD
-                produit = Produit.objects.get(id=int(el['id']))
-                products.append({
-                        'produit' : produit,
-                        'quantite' : el['quantite'],
-                        'prix' : el['prix'],
-                    })
-=======
                 id_produit = int(el['produit_id'])
                 quantite = int(el['quantite'])
                 id_mensualite = int(el['mensualite_id'])
->>>>>>> da4a7f763e195cac9934ed9ca7991324c812c90d
             except:
                 return send_error("Les id et la quantite doivent etre de type int!")
             
@@ -366,7 +358,7 @@ def commande_view(request):
             'Nouvelle Commande',
             message,
             'settings.EMAIL_HOST_USER',
-            ['mm_rabia@esi.dz'],
+            ['mm_rabia@esi.dz' , "mm_darmouni@esi.dz"],
             False,
         )
         

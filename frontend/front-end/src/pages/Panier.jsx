@@ -12,7 +12,10 @@ const PanierElement = ({ setTotalFacilite }) => {
         if (quantity === 1) {
             setTotalFacilite((prev) => prev + total)
         }
+    }, [])
 
+    useEffect(() => {
+        
     }, [])
     return (
         <li className='py-5  border-neutral-400 border-t-[1px] border-b-[1px] flex items-center font-Poppins justify-between'>
