@@ -1,9 +1,16 @@
 from django.db import models
 
+
+# Image
+class Image(models.Model):
+    name = models.CharField(max_length=64)
+    image = models.TextField()
+    
+
 # Categories
 class Categorie(models.Model):
     nom = models.CharField(max_length=64)
-    image = models.CharField(max_length=64)    
+    image = models.ForeignKey(Image, on_delete = models.PROTECT)
     order_on_home = models.IntegerField(unique=True)
     
     def __str__(self):
@@ -13,7 +20,6 @@ class Categorie(models.Model):
 # Sous-categories
 class Sous_Categorie(models.Model):
     nom = models.CharField(max_length=64)
-    image = models.CharField(max_length=64)   
     categorie = models.ForeignKey(Categorie, on_delete = models.CASCADE, related_name="sous_categories") 
     
     def __str__(self):
@@ -26,7 +32,7 @@ class Produit(models.Model):
     nom = models.CharField(max_length=64)
     nom_complet = models.CharField(max_length=64)
     prix_principal = models.IntegerField(default=0)
-    image = models.CharField(max_length=64)
+    image = models.ForeignKey(Image, on_delete = models.PROTECT)
     categorie = models.ForeignKey(Categorie, on_delete = models.CASCADE, related_name="produits")
     sous_categorie = models.ForeignKey(Sous_Categorie, on_delete = models.CASCADE, related_name="produits")
     nb_commandes = models.IntegerField(default=0)
@@ -87,9 +93,9 @@ class Produit_Commande(models.Model):
 
 
 # About
-class About(models.Model):    
+class About(models.Model):
     numero = models.CharField(max_length=64)
     email = models.CharField(max_length=64)
     
-    lien_insta = models.CharField(max_length=64)
-    lien_facebook = models.CharField(max_length=64)
+    lien_insta = models.CharField(max_length=128)
+    lien_facebook = models.CharField(max_length=128)

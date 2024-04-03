@@ -19,7 +19,11 @@ from django.urls import path, include, re_path
 from . import views
 
 urlpatterns = [
+    path('admin', views.go_admin),
     path('admin/', admin.site.urls),
     path('api/', include('api.urls')),
     re_path(r".*", views.index),
 ]
+
+admin.site.site_header = 'Darifacileplus Admin'
+admin.site.site_title = 'Darifacileplus Admin'

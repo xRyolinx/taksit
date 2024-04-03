@@ -2,14 +2,29 @@ from django.contrib import admin
 from .models import *
 
 
+# Images
+class ImageAdmin(admin.ModelAdmin):
+    list_display = ['name']
+    ordering = ['name']
+    
+    class Media:
+        js = ('api/js/images_model_admin.js',)
+
+
 # Categories
 class Sous_Categorie_InlineAdmin(admin.TabularInline):
     model = Sous_Categorie
-
+    
 class CategorieAdmin(admin.ModelAdmin):
     list_display = ['nom', 'order_on_home']
     ordering = ['order_on_home']
     inlines = [Sous_Categorie_InlineAdmin]
+    
+    class Media:
+        js = ('api/js/images_admin.js',)
+        css = {
+            'all' : ('api/css/images_admin.css',),
+        }
 
 
 # Produit
@@ -29,7 +44,10 @@ class ProduitAdmin(admin.ModelAdmin):
     readonly_fields = ['nb_commandes']
     
     class Media:
-        js = ('api/js/commande_admin.js',)
+        js = ('api/js/categories_admin.js', 'api/js/images_admin.js',)
+        css = {
+            'all' : ('api/css/images_admin.css',),
+        }
 
 
 # Commandes
@@ -42,8 +60,9 @@ class Commande_Admin(admin.ModelAdmin):
     ordering = ['date_heure_envoi']
     inlines = [Produit_Commande_InlineAdmin]
     readonly_fields = ['nom', 'salaire', 'telephone', 'wilaya', 'commune', 'adresse_complete', 'mode_de_livraison', 'date_heure_envoi']
+        
     
-    
+admin.site.register(Image, ImageAdmin)
 admin.site.register(Categorie, CategorieAdmin)
 admin.site.register(Produit, ProduitAdmin)
 admin.site.register(Commande, Commande_Admin)

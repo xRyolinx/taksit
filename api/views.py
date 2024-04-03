@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.http import JsonResponse
 from django.core.serializers import serialize
+from base64 import b64encode
 
 from django.core.mail import send_mail
 from django.conf import settings
@@ -12,6 +13,7 @@ from zoneinfo import ZoneInfo
 from .models import *
 
 import json
+import os
     
 
 
@@ -21,6 +23,77 @@ def send_error(msg):
         "status" : "NO",
         "error" : msg,
     })
+
+# add image
+def add_image(request):
+    # check method
+    if request.method != 'POST':
+        return send_error('Please send via a post request !')
+    
+    # get img
+    name = request.POST.get('name', None)
+    img = request.FILES.get('image', None)
+    try:
+        img = img.read()
+        img = b64encode(img).decode("utf-8")
+    except:
+        send_error('An error occured !')
+    
+    # check data
+    if (not img):
+        send_error("You didn't send an image!")
+        
+    # add to db
+    added = Image(image=img)
+    added.save()
+    
+    # name
+    if not name:
+        name = f'image {added.pk}'
+    added.name = name
+    added.save()
+    
+    print('pk : ', added.pk)
+    
+    # end
+    return JsonResponse({
+        "status" : "OK",
+        "id" : added.pk,
+    })
+
+
+# get image
+def get_images(request):
+    id = request.GET.get('id', None)
+    
+    # get img by id
+    if id:
+        image = Image.objects.filter(pk=id).values('id', 'name', 'image')
+        if not image: 
+            return send_error("L'id de cette image n'existe pas!")
+        image = list(image)
+        image = image[0]
+        image['image'] = 'data:;base64,' + image['image']
+        
+        
+        # end
+        return JsonResponse({
+            "status" : "OK",
+            "image" : image,
+        })
+        
+    # get all images
+    else:
+        images = Image.objects.all().values('id', 'name', 'image')
+        images = list(images)
+        for i in range(len(images)):
+            images[i]['image'] = 'data:;base64,' + images[i]['image']
+        # end
+        return JsonResponse({
+            "status" : "OK",
+            "images" : images,
+        })
+        
 
 # Categories
 def categories_view(request):
@@ -51,9 +124,11 @@ def categories_view(request):
     
 
     # send
+    filename = os.listdir(".")
     return JsonResponse({
         "status" : "OK",
         "categories" : categories,
+        "names" : filename,
     })
 
 
@@ -228,10 +303,7 @@ def produit_view(request):
     # Le produit
     produits = Produit.objects.filter(pk=id)
     if not produits:
-        return JsonResponse({
-        "status" : "NO",
-        "error" : "L'id de ce produit n'exite pas",
-    })
+        return send_error("L'id de ce produit n'exite pas")
     produit = produits[0]
 
     
@@ -280,26 +352,29 @@ def commande_view(request):
     # submit form
     if request.method == 'POST':
         # get data
-        nom = request.POST.get('nom')
-        telephone = request.POST.get('telephone')
-        wilaya = request.POST.get('wilaya')
-        commune = request.POST.get('commune')
-        adresse_complete = request.POST.get('adresse_complete')
-        mode_livraison = request.POST.get('mode_livraison')
-        salaire = request.POST.get('salaire')
+        data = json.loads(request.body)
         
-        try:
-            produits = json.loads(request.POST.get('produits'))
-        except Exception as e:
-            return send_error(str(e))
+        nom = data.get('nom')
+        telephone = data.get('telephone')
+        wilaya = data.get('wilaya')
+        commune = data.get('commune')
+        adresse_complete = data.get('adresse_complete')
+        mode_livraison = data.get('mode_livraison')
+        salaire = data.get('salaire')
+        produits = data.get('produits')
+        
+        print(nom, telephone, wilaya, commune, adresse_complete, mode_livraison, salaire)
         
         # check if all here
+        # if (not nom or not telephone or not salaire or not wilaya or not commune
+        # or not adresse_complete or not mode_livraison):
         if (not nom or not telephone or not salaire or not wilaya or not commune
-        or not adresse_complete or not mode_livraison):
+        or not adresse_complete):
             return send_error("Veuillez bien saisir toutes les informations!")
+        mode_livraison = 'A domicile'
         
         if not produits:
-            return send_error("Vous n'avez commande aucun produit!")
+            return send_error("Vous n'avez commandé aucun produit!")
         
         # salaire type checking
         try:
@@ -384,7 +459,7 @@ def commande_view(request):
             'Nouvelle Commande',
             message,
             settings.EMAIL_HOST_USER,
-            ['commercial@darifacileplus.dz'],
+            ['commercial@darifacileplus.dz', 'mm_rabia@esi.dz'],
             False,
         )
         

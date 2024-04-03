@@ -62,6 +62,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 
     // hide
+    let c_val = categories_div.value;
     let sc_val = sous_categories_div.value;
     hide(sous_categories_div);
 
@@ -69,9 +70,10 @@ document.addEventListener('DOMContentLoaded', async function() {
     let response = await fetch('/api/categories?sc=true');
     let result = await response.json();
     data = result['categories'];
+    console.log(result['names']);
 
     // if categorie and sc already selected
-    show(sous_categories_div, data, sc_val);
+    show(sous_categories_div, data, c_val);
     reselect(sous_categories_div, sc_val);
 
     // when choosing categorie
