@@ -25,6 +25,15 @@ class CategorieAdmin(admin.ModelAdmin):
         css = {
             'all' : ('api/css/images_admin.css',),
         }
+        
+    def get_form(self, request, obj=None, **kwargs):
+        form = super(CategorieAdmin, self).get_form(request, obj, **kwargs)
+        field = form.base_fields["image"]
+        field.widget.can_view_related = False
+        field.widget.can_add_related = False
+        field.widget.can_change_related = False
+        field.widget.can_delete_related = False
+        return form
 
 
 # Produit
@@ -48,6 +57,15 @@ class ProduitAdmin(admin.ModelAdmin):
         css = {
             'all' : ('api/css/images_admin.css',),
         }
+    
+    def get_form(self, request, obj=None, **kwargs):
+        form = super(ProduitAdmin, self).get_form(request, obj, **kwargs)
+        field = form.base_fields["image"]
+        field.widget.can_view_related = False
+        field.widget.can_add_related = False
+        field.widget.can_change_related = False
+        field.widget.can_delete_related = False
+        return form
 
 
 # Commandes

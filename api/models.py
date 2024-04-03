@@ -4,7 +4,10 @@ from django.db import models
 # Image
 class Image(models.Model):
     name = models.CharField(max_length=64)
-    image = models.TextField()
+    image = models.BinaryField()
+    
+    def __str__(self):
+        return f"{self.name}"
     
 
 # Categories

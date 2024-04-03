@@ -16,9 +16,9 @@ function hide(parent) {
 
 
 // show
-function show(parent, data, id) {
+function show(parent, data_categories, id) {
     // show
-    data.forEach(element => {
+    data_categories.forEach(element => {
         // found the categorie
         if (element['id'] == id)
         {
@@ -69,17 +69,16 @@ document.addEventListener('DOMContentLoaded', async function() {
     // fetch categories with the id of their sous_categories
     let response = await fetch('/api/categories?sc=true');
     let result = await response.json();
-    data = result['categories'];
-    console.log(result['names']);
+    let data_categories = result['categories'];
 
     // if categorie and sc already selected
-    show(sous_categories_div, data, c_val);
+    show(sous_categories_div, data_categories, c_val);
     reselect(sous_categories_div, sc_val);
 
     // when choosing categorie
     categories_div.addEventListener('change', (event) => {
         hide(sous_categories_div);
         let id = event.currentTarget.value;
-        show(sous_categories_div, data, id);
+        show(sous_categories_div, data_categories, id);
     });
 });

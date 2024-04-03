@@ -9,6 +9,7 @@ from django.conf import settings
 
 from datetime import datetime
 from zoneinfo import ZoneInfo
+import sys
 
 from .models import *
 
@@ -24,6 +25,45 @@ def send_error(msg):
         "error" : msg,
     })
 
+
+# get image
+def get_images(request):
+    id = request.GET.get('id', None)
+    
+    # get img by id
+    if id:
+        image = Image.objects.filter(pk=id).values('id', 'name', 'image')
+        if not image: 
+            return send_error("L'id de cette image n'existe pas!")
+        image = list(image)
+        image = image[0]
+        # decode
+        img = b64encode(image['image']).decode("utf-8")
+        # add for src img
+        image['image'] = 'data:;base64,' + img
+        
+        
+        # end
+        return JsonResponse({
+            "status" : "OK",
+            "image" : image,
+        })
+        
+    # get all images
+    else:
+        images = Image.objects.all().values('id', 'name', 'image')
+        images = list(images)
+        for i in range(len(images)):
+            # decode
+            img = b64encode(images[i]['image']).decode("utf-8")
+            # add for src img
+            images[i]['image'] = 'data:;base64,' + img
+        # end
+        return JsonResponse({
+            "status" : "OK",
+            "images" : images,
+        })
+
 # add image
 def add_image(request):
     # check method
@@ -33,9 +73,10 @@ def add_image(request):
     # get img
     name = request.POST.get('name', None)
     img = request.FILES.get('image', None)
+    
     try:
         img = img.read()
-        img = b64encode(img).decode("utf-8")
+        # img = b64encode(img).decode("utf-8")
     except:
         send_error('An error occured !')
     
@@ -52,48 +93,37 @@ def add_image(request):
         name = f'image {added.pk}'
     added.name = name
     added.save()
-    
-    print('pk : ', added.pk)
-    
+        
     # end
     return JsonResponse({
         "status" : "OK",
         "id" : added.pk,
     })
 
-
-# get image
-def get_images(request):
-    id = request.GET.get('id', None)
+# delete image
+def delete_images(request):
+    # check method
+    if request.method != 'POST':
+        return send_error('Please send via a post request !')
     
-    # get img by id
-    if id:
-        image = Image.objects.filter(pk=id).values('id', 'name', 'image')
-        if not image: 
-            return send_error("L'id de cette image n'existe pas!")
-        image = list(image)
-        image = image[0]
-        image['image'] = 'data:;base64,' + image['image']
-        
-        
-        # end
-        return JsonResponse({
-            "status" : "OK",
-            "image" : image,
-        })
-        
-    # get all images
-    else:
-        images = Image.objects.all().values('id', 'name', 'image')
-        images = list(images)
-        for i in range(len(images)):
-            images[i]['image'] = 'data:;base64,' + images[i]['image']
-        # end
-        return JsonResponse({
-            "status" : "OK",
-            "images" : images,
-        })
-        
+    # get img
+    id = request.POST.get('id', None)
+    try:
+        img = Image.objects.get(pk=id)
+    except:
+        return send_error("L'id de cette image n'existe pas !")
+
+    # delete
+    try:
+        img.delete()
+    except:
+        return send_error("Cette image est utilisée !")
+    
+    # end
+    return JsonResponse({
+        "status" : "OK",
+    })
+
 
 # Categories
 def categories_view(request):
@@ -112,15 +142,25 @@ def categories_view(request):
     # to json
     categories = list(categories)
     
-    # sous_categories
+    # sous_categories and img
     if check_sous_categorie == 'true':
         for i in range(len(categories)):
             # get objects of sous categories
-            sous_categories = Sous_Categorie.objects.filter(categorie=categories[i]['id']).values('id', 'nom', 'image')
+            sous_categories = Sous_Categorie.objects.filter(categorie=categories[i]['id']).values('id', 'nom')
             # to json
             sous_categories = list(sous_categories)
             # add to dict
             categories[i]['sous_categories'] = sous_categories
+            
+            # fetch img
+            try:
+                img_model = Image.objects.get(pk=categories[i]['image'])
+            except:
+                return send_error("L'id de cette image n'existe pas!")
+            # decode
+            img = b64encode(img_model.image).decode("utf-8")
+            # add for src img
+            categories[i]['image'] = 'data:;base64,' + img
     
 
     # send
@@ -151,9 +191,9 @@ def sous_categories_view(request):
     
     # get all objects
     if not quantity:
-        sous_categories = categorie.sous_categories.all().order_by('nom').values('id', 'nom', 'image')
+        sous_categories = categorie.sous_categories.all().order_by('nom').values('id', 'nom')
     else:
-        sous_categories = categorie.sous_categories.all().order_by('nom').values('id', 'nom', 'image')[:quantity]
+        sous_categories = categorie.sous_categories.all().order_by('nom').values('id', 'nom')[:quantity]
     
     # to json
     sous_categories = list(sous_categories)
@@ -258,6 +298,13 @@ def produits_view(request):
     # to json
     produits = list(produits)
     
+    # images
+    for i in range(len(produits)):
+        # decode
+        img = b64encode(produits[i]['image']).decode("utf-8")
+        # add for src img
+        produits[i]['image'] = 'data:;base64,' + img
+    
     # total
     total_check = request.GET.get('total', None)
     if total_check == 'true':
@@ -321,7 +368,6 @@ def produit_view(request):
     produit = serialize('json', produits)
     produit = json.loads(produit)
     produit = produit[0]
-    
     produit['fields']['id'] = produit['pk']
     produit = produit['fields']
     
@@ -329,6 +375,11 @@ def produit_view(request):
     produit['mensualites'] = prix
     produit['details'] = details
     produit['description'] = description
+    
+    # decode
+    img = b64encode(produit['image']).decode("utf-8")
+    # add for src img
+    produit['image'] = 'data:;base64,' + img
     
     
     # send
@@ -366,12 +417,9 @@ def commande_view(request):
         print(nom, telephone, wilaya, commune, adresse_complete, mode_livraison, salaire)
         
         # check if all here
-        # if (not nom or not telephone or not salaire or not wilaya or not commune
-        # or not adresse_complete or not mode_livraison):
         if (not nom or not telephone or not salaire or not wilaya or not commune
-        or not adresse_complete):
+        or not adresse_complete or not mode_livraison):
             return send_error("Veuillez bien saisir toutes les informations!")
-        mode_livraison = 'A domicile'
         
         if not produits:
             return send_error("Vous n'avez commandé aucun produit!")
@@ -388,7 +436,8 @@ def commande_view(request):
                 return send_error("Keys missing!")
         
         # date - heure
-        date_heure_envoi = datetime.now(tz=ZoneInfo("Africa/Algiers")).strftime("%d/%m/%Y - %H:%M:%S")
+        date_heure_envoi = datetime.now().strftime("%d/%m/%Y - %H:%M:%S")
+        # date_heure_envoi = datetime.now(tz=ZoneInfo("Africa/Algiers")).strftime("%d/%m/%Y - %H:%M:%S")
 
 
         # get products

@@ -30,7 +30,7 @@ function show_div_buttons() {
     document.querySelector('#add-img-buttons').style.display = 'flex';
 }
 function hide_div_buttons() {
-    document.querySelector('#add-img-buttons').removeAttribute('style');
+    document.querySelector('#add-img-buttons').style.display = 'none';
 }
 function show_buttons() {
     document.querySelector('#enregistrer').style.display = 'block';
@@ -62,14 +62,14 @@ function hide_loading() {
 }
 // free img
 function free_file() {
-    document.querySelector('#input-img').innerHTML = 'Entrez votre img';
+    document.querySelector('#input-img').innerHTML = 'Ajoutez une image';
     document.querySelector('#file-img').value = '';
 }
 
 // load img displayer
 function load_img_displayer(id, src, name) {
     let id_input = document.querySelector('#selected-id');
-    id_input.value = id;
+    id_input.value = `article_${id}`;
     let text = document.querySelector('#input-img');
     text.innerText = name;
     let img = document.querySelector('#img-display-container img');
@@ -90,7 +90,6 @@ function load_img_displayer(id, src, name) {
 
     // vider file
     document.querySelector('#file-img').value = '';
-    
 }
 
 // prepend img
@@ -132,8 +131,16 @@ async function send(data, route)
         let article = article_html(result['id'], src, data.get('name'));
         prepend_img(article);
 
-        // select box
-        await sleep(2000);
+        // add select box
+        let option = document.createElement('option');
+        option.innerText = data.get('name');
+        option.value = result['id'];
+        let select = document.querySelector('#id_image');
+        select.appendChild(option);
+
+
+        // select article
+        await sleep(1500);
         if (document.querySelector('#selectionner').clientHeight == 0)
         {
             article.click();
@@ -223,7 +230,6 @@ function add_img() {
     });
     
 
-
     // ---- get img from input -----
     // open to get file
     div_file.addEventListener('click', () => {
@@ -287,17 +293,35 @@ function add_img() {
 
     // selectionner
     document.querySelector('#selectionner').addEventListener('click', () => {
-        // load id
+        // load id in input
         let input = document.querySelector('#id_image');
-        let id = document.querySelector('#selected-id').value;
+        let id = document.querySelector('#selected-id').value.replace('article_', '');
         input.value = id;
-        console.log(input.value);
-        // load text admin
-        let text_admin = document.querySelector('#choose-img-button');
-        text_admin.innerText = document.querySelector('#input-img').innerText;
+        // load in admin
+        console.log(id);
+        charger_img_admin(id);
         // quit
         document.querySelector('#quitter').click();
     });;
+
+    // supprimer
+    document.querySelector('#supprimer').addEventListener('click', () => {
+        // loading
+        show_loading();
+        hide_buttons();
+        hide_select_buttons();
+
+        // Creer data et vider les champs
+        let data = new FormData();
+
+        // id of img
+        let id = document.querySelector('#selected-id').value.replace('article_', '');
+        console.log(id);
+        data.append('id', id);
+
+        // delete
+        delete_img(data);
+    })
 
     // quitter
     document.querySelector('#quitter').addEventListener('click', () => {
@@ -306,14 +330,71 @@ function add_img() {
 }
 
 
+// delete image
+async function delete_img(data)
+{
+    let route = '/api/delete_image';
+    // fetch
+    let result = await fetch(route, {
+        method: "POST",
+        body : data,
+        headers: {
+            "X-CSRFToken": getCookie("csrftoken"),
+        }
+    });
+    result = await result.json();
+    await sleep(1000);
+
+    // stop loading
+    hide_loading();
+
+
+    // afficher resultat du message
+    let status = document.getElementById('status');
+    show_status();
+
+    if (result['status'] == 'OK')
+    {
+        status.style.color = "green";
+        status.innerHTML = "Image supprimée !";
+
+        // remove article
+        let article = document.querySelector(`#article_${data.get('id')}`);
+        article.remove();
+
+        // remove option from select box
+        let options = document.querySelectorAll('#id_image option');
+        options.forEach(option => {
+            if (option.value == data.get('id'))
+            {
+                option.remove();
+            }
+        });
+
+        // add new image
+        await sleep(1500);
+        if (document.querySelector('#selectionner').clientHeight == 0)
+        {
+            hide_div_buttons();
+            hide_img();
+            free_file();
+        }
+    }
+    else
+    {
+        status.style.color = "red";
+        status.innerHTML = `${result['error']}`;
+    }
+}
 
 
 // article
 function article_html(id, src, nom) {
     // create element
     let article = document.createElement('article');
+    article.id = `article_${id}`;
     article.innerHTML = `
-        <div id='${id}' class='article-img'>
+        <div class='article-img'>
             <img src='${src}'>
         </div>
         <div class='article-name'>${nom}</div>
@@ -321,6 +402,9 @@ function article_html(id, src, nom) {
     // event
     article.addEventListener('click', ()=> {
         load_img_displayer(id, src, nom);
+        // height of buttons div
+        let buttons = document.querySelector('#add-img-buttons');
+        buttons.style.height = buttons.clientHeight.toString() + 'px'; //for the chargement
     });
     // return
     return article;
@@ -370,37 +454,54 @@ function load_img() {
 }
 
 
+// charger_img_admin
+async function charger_img_admin(id) {
+    let img = document.querySelector('#img-display-admin');
+    let div = document.querySelector('#choose-img-button');
+    let route = `/api/get_images?id=${id}`;
+
+    // fetch
+    let result = await fetch(route, {
+        method: "GET",
+        headers: {
+            "X-CSRFToken": getCookie("csrftoken"),
+        }
+    });
+    result = await result.json();
+    data = result['image'];
+
+    // display
+    img.src = data['image'];
+    div.innerText = data['name'];
+}
+
 // create img field
 function create_field_admin(){
-    let input_field_original = document.querySelector('#id_image');
-    let parent = input_field_original.parentElement;
+    // select fields
+    let input_field = document.querySelector('#id_image');
+    let parent = input_field.parentElement;
     parent.style.display = 'block';
-
-    // create file for holding the value of id of img
-    let input_field = document.createElement('input');
-    input_field.name = input_field_original.name;
-    input_field.id = input_field_original.id;
     input_field.hidden = true;
 
     // create button to choose img
     let choose_img_button = document.createElement('div');
     choose_img_button.classList.add('vTextField');
+    choose_img_button.style.marginTop = '20px';
     choose_img_button.id = 'choose-img-button';
     choose_img_button.innerHTML = "<span>Choisir l'image<span>";
-    
-    // delete original
-    input_field_original.remove();
-    for (let i = 0; i < parent.children.length; i++)
-    {
-        let el = parent.children[i]
-        if (el.id != 'id_image' && el.id != 'choose-img-button') {
-            el.remove();
-        }
-    }
-
-    // replace with new
-    parent.appendChild(input_field);
     parent.appendChild(choose_img_button);
+
+    // create img
+    let img = document.createElement('img');
+    img.id = 'img-display-admin';
+    img.setAttribute('style', 'display: block; width: 100%; max-width: 250px; margin-top: 40px;');
+    parent.append(img);
+
+    // display img if already has one, or when loads one
+    if (input_field.value)
+    {
+        charger_img_admin(input_field.value, img);
+    }
 }
 
 
