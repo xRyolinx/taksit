@@ -142,7 +142,19 @@ def categories_view(request):
     # to json
     categories = list(categories)
     
-    # sous_categories and img
+    # img
+    for i in range(len(categories)):
+        # fetch img
+        try:
+            img_model = Image.objects.get(pk=categories[i]['image'])
+        except:
+            return send_error("L'id de cette image n'existe pas!")
+        # decode
+        img = b64encode(img_model.image).decode("utf-8")
+        # add for src img
+        categories[i]['image'] = 'data:;base64,' + img
+    
+    # sous_categories
     if check_sous_categorie == 'true':
         for i in range(len(categories)):
             # get objects of sous categories
@@ -151,24 +163,14 @@ def categories_view(request):
             sous_categories = list(sous_categories)
             # add to dict
             categories[i]['sous_categories'] = sous_categories
-            
-            # fetch img
-            try:
-                img_model = Image.objects.get(pk=categories[i]['image'])
-            except:
-                return send_error("L'id de cette image n'existe pas!")
-            # decode
-            img = b64encode(img_model.image).decode("utf-8")
-            # add for src img
-            categories[i]['image'] = 'data:;base64,' + img
     
 
     # send
-    filename = os.listdir(".")
+    # filename = os.listdir(".")
     return JsonResponse({
         "status" : "OK",
         "categories" : categories,
-        "names" : filename,
+        # "names" : filename,
     })
 
 
@@ -300,8 +302,13 @@ def produits_view(request):
     
     # images
     for i in range(len(produits)):
+        # fetch img
+        try:
+            img_model = Image.objects.get(pk=produits[i]['image'])
+        except:
+            return send_error("L'id de cette image n'existe pas!")
         # decode
-        img = b64encode(produits[i]['image']).decode("utf-8")
+        img = b64encode(img_model.image).decode("utf-8")
         # add for src img
         produits[i]['image'] = 'data:;base64,' + img
     
@@ -376,8 +383,13 @@ def produit_view(request):
     produit['details'] = details
     produit['description'] = description
     
+     # fetch img
+    try:
+        img_model = Image.objects.get(pk=produit['image'])
+    except:
+        return send_error("L'id de cette image n'existe pas!")
     # decode
-    img = b64encode(produit['image']).decode("utf-8")
+    img = b64encode(img_model.image).decode("utf-8")
     # add for src img
     produit['image'] = 'data:;base64,' + img
     
